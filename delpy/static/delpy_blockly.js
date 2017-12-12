@@ -79,7 +79,6 @@ define(function(require) {
     }
 
     inject(code);
-    alert(code);
 
     this.reinject = function() { inject(thisDelpy.get_workspace()); }
 
