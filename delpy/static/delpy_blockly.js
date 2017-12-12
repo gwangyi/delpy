@@ -56,9 +56,11 @@ define(function(require) {
       $(workspace).html('');
 
       var workspacePlayground = Blockly.inject(workspace, parameters);
+      workspacePlayground.delpy = thisDelpy;
       thisDelpy.workspace = workspacePlayground;
       var dom = Blockly.Xml.textToDom(code);
-      Blockly.Xml.domToWorkspace(dom, workspacePlayground);
+      if(dom)
+        Blockly.Xml.domToWorkspace(dom, workspacePlayground);
 
       $(delpy_categories).each(function(i, cat) {
         workspacePlayground.registerToolboxCategoryCallback("DELPY-" + i, function() {

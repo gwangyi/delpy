@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
         name="delpy",
-        version="2017.12.12a0.dev0",
+        version="2017.12.12a0.dev1",
         packages=["delpy"],
         package_data={'delpy': ['*.xml', 'static/*']},
         url='https://github.com/gwangyi/delpy',
