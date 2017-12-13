@@ -25,7 +25,7 @@ class Delpy:
         cls._procedures = dict((k, v) for base in cls.__bases__ for k, v in base._procedures)
 
         for k, v in cls.__dict__.items():
-            if isinstance(v, typing.Callable):
+            if isinstance(v, typing.Callable) and hasattr(v, '_delpy'):
                 sig = inspect.signature(v)
                 parameters = list(sig.parameters.keys())
                 cls._procedures[k] = {
