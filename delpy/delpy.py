@@ -9,7 +9,7 @@ from ipykernel.comm.comm import Comm
 from ipykernel.comm.manager import CommManager
 from pkg_resources import resource_string
 from xml.etree import ElementTree as ET
-
+from ipywidgets import Output
 from .capture import capture_output
 
 
@@ -22,8 +22,8 @@ class Delpy:
 
     @classmethod
     def __init_subclass__(cls, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init_subclass__(*args, **kwargs)
         cls._procedures = dict((k, v) for base in cls.__bases__ for k, v in base._procedures)
-
         for k, v in cls.__dict__.items():
             if isinstance(v, typing.Callable) and hasattr(v, '_delpy'):
                 sig = inspect.signature(v)
@@ -34,6 +34,7 @@ class Delpy:
                     'doc': v.__doc__,
                     'category': str(getattr(v, '_delpy'))
                 }
+        
 
     def __init__(self, **kwargs: typing.Any) -> None:
         self._parameters: str = html.escape(json.dumps(kwargs))
@@ -118,3 +119,48 @@ def delpy_method(tag: str="Delpy") -> typing.Callable[[_T], _T]:
 
 if get_ipython():
     get_ipython().kernel.comm_manager.register_target('delpy', Delpy._comm_target)
+
+    
+class OutputWidget(Output):
+    """
+        Inherits from ipywidgets.Output but needs _procedures for compatibility with Delpy
+    """
+    _procedures: typing.Dict[str, typing.Any] = dict()
+    @classmethod
+    def __init_subclass__(cls,*args, **kwargs):
+        super().__init_subclass__(*args, **kwargs)
+    
+    
+class DelpyWidget(OutputWidget,Delpy):
+    """
+        Delpy may be used as a widget since it inherits from both Delpy and OutputWidget
+    """
+    def __init__(self):
+        super(Delpy,self).__init__()
+        super(OutputWidget,self).__init__()
+        # Refresh the html representation when displayed
+        self.on_displayed(self.show)
+    
+    def html(self):
+        """
+            Delpy._repr_html_
+        """
+        return Delpy._repr_html_(self)
+        
+    def show(self, event):
+        """
+            Called when displayed
+        """
+        with self:
+            display(Repr_html(self))
+        
+        
+class Repr_html:
+    """
+        Proxy for html representation
+    """
+    def __init__(self,delpy):
+        self.delpy=delpy
+        
+    def _repr_html_(self):
+        return self.delpy.html()    
