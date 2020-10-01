@@ -2,7 +2,7 @@
 
 Blockly on Jupyter Notebook with Python
 
-## Installation
+## Installation 
 
 ```bash
 pip install delpy
@@ -20,7 +20,7 @@ jupyter nbextension install delpy --py --sys-prefix --symlink
 jupyter nbextension enable delpy --py
 ```
 
-## Example
+## Example of Deply
 
 ```python
 from delpy import Delpy, delpy_method
